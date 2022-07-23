@@ -1,4 +1,4 @@
-import { Application, Graphics, Loader, Point, Sprite, Text } from "pixi.js";
+import { Application, Graphics, Loader, Point, Sprite, Spritesheet, Text } from "pixi.js";
 import { Map } from "./components/map";
 import { Player, PlayerColour } from "./components/player";
 import { update as TweenUpdate } from "@tweenjs/tween.js";
@@ -13,6 +13,7 @@ export class Game {
     public message?: Message;
     public player?: Player;
     public inventory?: Inventory;
+    public sheet?: Spritesheet;
 
     private delta: number = 0;
     private lastUpdateTime?: number;
@@ -28,15 +29,14 @@ export class Game {
 
         Loader.shared
             .add("assets/spritesheet.json")
-            .add("assets/splat.png")
             .load((loader, resources) => {
-                const sheet = resources["assets/spritesheet.json"]?.spritesheet;
-                this.map = new Map(this, sheet!, new MapData(this), this.app!.stage);
+                this.sheet = resources["assets/spritesheet.json"]?.spritesheet;
+                this.map = new Map(this, new MapData(this), this.app!.stage);
                 this.message = new Message(this, this.app!.stage);
-                this.player = new Player(this, sheet!, PlayerColour.Red, this.app!.stage);
+                this.player = new Player(this, PlayerColour.Red, this.app!.stage);
                 this.inventory = new Inventory(this, this.app!.stage);
 
-                this.message.setText("You awaken from a deep sleep in a makeshift bed with no idea how you got here. There is a note... it reads:\n\nESCAPE THE FATAL DUNGEON", 0xCC3333);
+                this.message.setText("You awaken from a deep sleep in a makeshift bed with no idea how you got here. There is a note... it reads:\n\nESCAPE THE FATAL DUNGEON", undefined, 0xCC3333);
 
                 this.app!.render();
                 canvas.style.display = "block";
@@ -46,13 +46,13 @@ export class Game {
     }
 
     public showDeath(final: boolean = false): void {
-        this.player!.enabled = false;
+        this.player?.setEnabled(false, "death");
         const filter = new GlowFilter({ color: 0xCC3333, distance: 20, outerStrength: 20, quality: 1 });
         const fade = new Graphics();
         fade.beginFill(0xFFFFFF, 0.8);
         fade.drawRect(0, 0, 1000, 1000);
         fade.endFill();
-        const splat = new Sprite(Loader.shared.resources["assets/splat.png"].texture);
+        const splat = new Sprite(this.sheet!.textures["splat.png"]);
         splat.width = 1000;
         splat.height = 1000;
         splat.tint = 0xCC3333;

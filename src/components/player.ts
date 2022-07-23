@@ -9,7 +9,7 @@ export enum PlayerColour {
 }
 
 export class Player {
-    public enabled: boolean;
+    private disabledReasons: string[];
 
     private body: Sprite;
     private questionMark: Text;
@@ -17,17 +17,15 @@ export class Player {
     private moveTween?: Tween<Sprite>;
     private interaction?: InteractionData;
 
-    constructor(private game: Game, sheet: Spritesheet, colour: PlayerColour, stage: Container) {
-        this.body = new Sprite(sheet.textures[`${colour}_character.png`]);
+    constructor(private game: Game, colour: PlayerColour, stage: Container) {
+        this.body = new Sprite(this.game.sheet!.textures[`${colour}_character.png`]);
         this.body.width = 100;
         this.body.height = 100;
         this.body.anchor.set(0.5, 0.5);
 
-        const filter: GlowFilter = new GlowFilter({ color: 0x000000, distance: 10, quality: 10 });
-        const style: TextStyle = new TextStyle({ fontSize: 60, fill: 0xFFFFFF });
+        const style: TextStyle = new TextStyle({ fontSize: 40, fill: 0xFFFFFF, fontWeight: "bold", stroke: 0x222222, strokeThickness: 8 });
         this.questionMark = new Text("?", style);
         this.questionMark.anchor.set(0.5, 0.5);
-        this.questionMark.filters = [ filter ];
         this.questionMark.visible = false;
         this.body.addChild(this.questionMark);
 
@@ -37,7 +35,7 @@ export class Player {
         this.setPosition(this.game.map!.mapData.startPosition.x, this.game.map!.mapData.startPosition.y, true);
 
         window.addEventListener("keydown", (ev: KeyboardEvent) => {
-            if (this.enabled) {
+            if (this.disabledReasons.length === 0) {
                 switch (ev.key) {
                     case "ArrowUp":
                         this.move(0, -1);
@@ -58,12 +56,14 @@ export class Player {
             }
         });
 
-        this.enabled = true;
+        this.disabledReasons = [];
     }
 
-    public clearInteraction(): void {
-        this.interaction = undefined;
-        this.questionMark.visible = false;
+    public setEnabled(enabled: boolean, reason: string): void {
+        this.disabledReasons = this.disabledReasons.filter((x) => x !== reason);
+        if (!enabled) {
+            this.disabledReasons.push(reason);
+        }
     }
 
     public getPosition(): Point {
@@ -79,6 +79,17 @@ export class Player {
 
     public teleport(x: number, y: number): void {
         this.setPosition(x, y, true);
+    }
+
+    public updateInteraction(interaction?: InteractionData): void {
+        this.interaction = interaction;
+        if (interaction) {
+            this.questionMark.visible = interaction.interaction && interaction.enabled;
+            this.activateInteraction(false);
+        } else {
+            this.questionMark.visible = false;
+            this.activateInteraction(false);
+        }
     }
 
     private setPosition(x: number, y: number, teleport: boolean = false): void {
@@ -105,49 +116,13 @@ export class Player {
         this.position.set(x, y);
     }
 
-    private updateInteraction(interaction?: InteractionData): void {
-        this.interaction = interaction;
-        if (interaction) {
-            this.questionMark.visible = interaction.interaction;
-            this.activateInteraction(false);
-        } else {
-            this.questionMark.visible = false;
-            this.activateInteraction(false);
-        }
-    }
-
     private activateInteraction(keyPress: boolean): void {
-        this.game.message!.setText("");
         if (this.interaction) {
-            const shouldActivate: boolean = !this.interaction.interaction || keyPress;
+            const shouldActivate: boolean = (!this.interaction.interaction || keyPress) && this.interaction.enabled;
             if (shouldActivate) {
-                if (this.interaction.message) {
-                    this.game.message?.setText(this.interaction.message);
-                }
-
-                if (this.interaction.itemRequired) {
-                    if (this.game.inventory!.hasItem(this.interaction.itemRequired)) {
-                        this.game.inventory!.removeItem(this.interaction.itemRequired);
-                        this.interaction.itemAlreadyUsed = true;
-                        if (this.interaction.itemMessage) {
-                            this.game.message?.setText(this.interaction.itemMessage);
-                        }
-                        if (this.interaction.itemAction) {
-                            this.interaction.itemAction();
-                        }
-                    } else if (this.interaction.itemAlreadyUsed) {
-                        if (this.interaction.itemAlreadyUsedMessage) {
-                            this.game.message?.setText(this.interaction.itemAlreadyUsedMessage);
-                        }
-                    }
-                } else {
-                    if (this.interaction.action) {
-                        this.interaction.action();
-                    }
-                }
-
-                if (this.interaction?.prompt) {
-                    this.game.message!.setPrompt(this.interaction.prompt, this.interaction.promptOptions, this.interaction.promptAction);
+                if (this.interaction.action) {
+                    this.interaction.action(this.interaction);
+                    this.updateInteraction(undefined);
                 }
             }
         }

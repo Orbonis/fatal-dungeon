@@ -1,4 +1,4 @@
-import { Container, Graphics, Point, Sprite, Spritesheet } from "pixi.js";
+import { Container, Graphics, Sprite } from "pixi.js";
 import { Game } from "src/game";
 import { InteractionData, MapData } from "./map-data";
 
@@ -6,7 +6,7 @@ export class Map {
     public tiles: Sprite[][][];
     public shadows: Graphics[];
 
-    constructor(private game: Game, public sheet: Spritesheet, public mapData: MapData, stage: Container) {
+    constructor(private game: Game, public mapData: MapData, stage: Container) {
         this.tiles = [];
         for (let layer = 0; layer < this.mapData.tiles.length; layer++) {
             this.tiles.push([]);
@@ -21,10 +21,11 @@ export class Map {
                     const yOffset = (textureData && textureData[3]) ? Number(textureData[3]) : 0;
                     const xScale = (textureData && textureData[4]) ? Number(textureData[4]) : 1;
                     const yScale = (textureData && textureData[5]) ? Number(textureData[5]) : 1;
+                    const alpha = (textureData && textureData[6]) ? Number(textureData[6]) : 1;
                     const tile = new Sprite();
                     if (textureData) {
                         const image = `${textureData[0]}.png`;
-                        tile.texture = sheet.textures[image];
+                        tile.texture = this.game.sheet!.textures[image];
                     }
                     tile.width = 100 * xScale;
                     tile.height = 100 * yScale;
@@ -32,6 +33,7 @@ export class Map {
                     tile.y = (100 * y) + 50 + yOffset;
                     tile.anchor.set(0.5, 0.5);
                     tile.angle = rotation;
+                    tile.alpha = alpha;
                     layerContainer.addChild(tile);
                     this.tiles[layer][x].push(tile);
                 }
@@ -63,13 +65,10 @@ export class Map {
         this.shadows.forEach((x) => {
             stage.addChildAt(x, 3);
         });
-
-        (window as any).hideShadows = () => this.shadows.forEach((x) => x.visible = false);
-        (window as any).hideTile = (l: number, x: number, y: number) => this.tiles[l][x][y].visible = false;
     }
 
     public setTile(layer: number, x: number, y: number, texture: string): void {
-        this.tiles[layer][x][y].texture = this.sheet.textures[`${texture}.png`];
+        this.tiles[layer][x][y].texture = this.game.sheet!.textures[`${texture}.png`];
     }
 
     public canLeave(x: number, y: number, direction: number): boolean {

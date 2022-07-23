@@ -13,9 +13,6 @@ export class Message {
     private prompt: Graphics;
     private promptText: Text;
 
-
-    private timeoutTimer?: number;
-
     constructor(private game: Game, stage: Container) {
         const style = new TextStyle({ align: "center", fontSize: 30, fill: 0x000000, wordWrap: true, wordWrapWidth: 650 });
 
@@ -48,10 +45,12 @@ export class Message {
         this.prompt.addChild(this.promptText);
     }
 
-    public setText(text: string, colour?: number, timeout?: number): void {
+    public setText(text: string | string[], callback?: Function, colour?: number): void {
         this.box.parent.setChildIndex(this.box, this.box.parent.children.length - 1);
         this.box.visible = text.length > 0;
-        this.boxText.text = text;
+        const messages = (typeof(text) === "string") ? [ text ] : text;
+        console.log(messages);
+        this.boxText.text = messages.shift() ?? "";
         if (colour !== undefined) {
             this.boxText.style.fill = colour;
         } else {
@@ -70,16 +69,27 @@ export class Message {
                     this.box.y = 650;
                     break;
             }
-        }
 
-        if (this.timeoutTimer !== undefined) {
-            window.clearTimeout(this.timeoutTimer);
-        }
-
-        if (timeout !== undefined) {
-            this.timeoutTimer = window.setTimeout(() => {
-                this.box.visible = false;
-            }, timeout);
+            if (this.boxText.text !== "") {
+                this.game.player?.setEnabled(false, "message");
+                window.setTimeout(() => {
+                    const nextMessage = (ev: KeyboardEvent) => {
+                        if (ev.key === " " || ev.key.startsWith("Arrow")) {
+                            window.removeEventListener("keydown", nextMessage);
+                            if (messages.length > 0) {
+                                this.setText(messages, callback, colour);
+                            } else {
+                                this.setText("");
+                                this.game.player?.setEnabled(true, "message");
+                                if (callback) {
+                                    callback();
+                                }
+                            }
+                        }
+                    };
+                    window.addEventListener("keydown", nextMessage);
+                }, 100);
+            }
         }
     }
 
@@ -136,7 +146,7 @@ export class Message {
                     break;
                 case " ":
                     this.prompt.visible = false;
-                    this.game.player!.enabled = true;
+                    this.game.player?.setEnabled(true, "prompt");
                     optionsText.forEach((x) => x.destroy());
                     window.removeEventListener("keydown", controlPrompt);
                     if (action) {
@@ -150,10 +160,6 @@ export class Message {
         window.addEventListener("keydown", controlPrompt);
         updateSelectionHighlight();
 
-        if (this.timeoutTimer !== undefined) {
-            window.clearTimeout(this.timeoutTimer);
-        }
-
-        this.game.player!.enabled = false;
+        this.game.player?.setEnabled(false, "prompt");
     }
 }
