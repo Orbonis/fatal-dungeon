@@ -12,13 +12,15 @@ export class Message {
     
     private prompt: NineSlicePlane;
     private promptText: Text;
+    private promptSelectText: Text;
+    private promptSpacebar: Sprite;
 
     constructor(private game: Game, stage: Container) {
-        const style = new TextStyle({ align: "center", fontSize: 40, fontWeight: "bold", fill: 0x000000, wordWrap: true, wordWrapWidth: 650, fontFamily: "Edu VIC WA NT Beginner" });
+        const style = new TextStyle({ align: "center", fontSize: 35, fontWeight: "bold", fill: 0x000000, wordWrap: true, wordWrapWidth: 650, fontFamily: "Edu VIC WA NT Beginner" });
 
         this.box = new NineSlicePlane(this.game.sheet!.textures["ui_box_filled.png"], 10, 10, 10, 10);
         this.box.width = 700;
-        this.box.height = 300;
+        this.box.height = 350;
         this.box.visible = false;
         stage.addChild(this.box);
 
@@ -28,9 +30,24 @@ export class Message {
         this.boxText.y = 150;
         this.box.addChild(this.boxText);
 
+        const continueStyle = new TextStyle({ align: "center", fontSize: 25, fontWeight: "bold", fill: 0x000000, wordWrap: true, wordWrapWidth: 650, fontFamily: "Edu VIC WA NT Beginner" });
+        const continueText = new Text("PRESS              TO CONTINUE", continueStyle);
+        continueText.anchor.set(0.5, 0.5);
+        continueText.x = 350;
+        continueText.y = 325;
+        this.box.addChild(continueText);
+
+        const spacebar = new Sprite(this.game.sheet!.textures["ui_spacebar.png"]);
+        spacebar.width = 48 * 1.5;
+        spacebar.height = 16 * 1.5;
+        spacebar.anchor.set(0.5, 0.5);
+        spacebar.x = 310;
+        spacebar.y = 323;
+        this.box.addChild(spacebar);
+
         this.prompt = new NineSlicePlane(this.game.sheet!.textures["ui_box_filled.png"], 10, 10, 10, 10);
         this.prompt.width = 700;
-        this.prompt.height = 400;
+        this.prompt.height = 450;
         this.prompt.visible = false;
         stage.addChild(this.prompt);
         
@@ -39,6 +56,20 @@ export class Message {
         this.promptText.x = 350;
         this.promptText.y = 100;
         this.prompt.addChild(this.promptText);
+
+        this.promptSelectText = new Text("PRESS              TO SELECT", continueStyle);
+        this.promptSelectText.anchor.set(0.5, 0.5);
+        this.promptSelectText.x = 350;
+        this.promptSelectText.y = 425;
+        this.prompt.addChild(this.promptSelectText);
+
+        this.promptSpacebar = new Sprite(this.game.sheet!.textures["ui_spacebar.png"]);
+        this.promptSpacebar.width = 48 * 1.5;
+        this.promptSpacebar.height = 16 * 1.5;
+        this.promptSpacebar.anchor.set(0.5, 0.5);
+        this.promptSpacebar.x = 325;
+        this.promptSpacebar.y = 423;
+        this.prompt.addChild(this.promptSpacebar);
     }
 
     public setText(text: string | string[], callback?: Function, colour?: number): void {
@@ -69,7 +100,7 @@ export class Message {
                 this.game.player?.setEnabled(false, "message");
                 window.setTimeout(() => {
                     const nextMessage = (ev: KeyboardEvent) => {
-                        if (ev.key === " " || ev.key.startsWith("Arrow")) {
+                        if (ev.key === " ") {
                             window.removeEventListener("keydown", nextMessage);
                             if (messages.length > 0) {
                                 this.setText(messages, callback, colour);
@@ -93,8 +124,10 @@ export class Message {
         this.prompt.visible = text.length > 0;
         this.promptText.text = text;
 
-        this.prompt.height = 400 + (Math.max(options.length - 3, 0) * 100);
+        this.prompt.height = 450 + (Math.max(options.length - 3, 0) * 100);
         this.promptText.y = 100 + (Math.max(options.length - 3, 0) * 50);
+        this.promptSelectText.y = 425 + (Math.max(options.length - 3, 0) * 100);
+        this.promptSpacebar.y = 423 + (Math.max(options.length - 3, 0) * 100);
 
         if (this.game.player) {
             const position = this.game.player.getPosition().y > 5 ? MessagePosition.Top : MessagePosition.Bottom;
@@ -113,7 +146,7 @@ export class Message {
         let selectedOption = 0;
         const optionsText: Text[] = [];
         for (let i = 0; i < options.length; i++) {
-            const style = new TextStyle({ align: "center", fontSize: 40, fill: 0x000000, wordWrap: true, wordWrapWidth: 650, fontWeight: "bold", fontFamily: "Edu VIC WA NT Beginner" });
+            const style = new TextStyle({ align: "center", fontSize: 35, fill: 0x000000, wordWrap: true, wordWrapWidth: 650, fontWeight: "bold", fontFamily: "Edu VIC WA NT Beginner" });
             const text = new Text(options[i], style);
             text.anchor.set(0.5, 0.5);
             text.x = this.promptText.x;
