@@ -68,6 +68,10 @@ export class Player {
         this.questionMark.visible = false;
     }
 
+    public getPosition(): Point {
+        return this.position;
+    }
+
     private move(x: number, y: number): void {
         if (this.game.map!.canMove(this.position.x + x, this.position.y + y)) {
             this.setPosition(this.position.x + x, this.position.y + y);
@@ -117,7 +121,7 @@ export class Player {
             const shouldActivate: boolean = !this.interaction.interaction || keyPress;
             if (shouldActivate) {
                 if (this.interaction.message) {
-                    this.showMessage(this.interaction.message);
+                    this.game.message?.setText(this.interaction.message);
                 }
 
                 if (this.interaction.itemRequired) {
@@ -125,14 +129,14 @@ export class Player {
                         this.game.inventory!.removeItem(this.interaction.itemRequired);
                         this.interaction.itemAlreadyUsed = true;
                         if (this.interaction.itemMessage) {
-                            this.showMessage(this.interaction.itemMessage);
+                            this.game.message?.setText(this.interaction.itemMessage);
                         }
                         if (this.interaction.itemAction) {
                             this.interaction.itemAction();
                         }
                     } else if (this.interaction.itemAlreadyUsed) {
                         if (this.interaction.itemAlreadyUsedMessage) {
-                            this.showMessage(this.interaction.itemAlreadyUsedMessage);
+                            this.game.message?.setText(this.interaction.itemAlreadyUsedMessage);
                         }
                     }
                 } else {
@@ -140,11 +144,11 @@ export class Player {
                         this.interaction.action();
                     }
                 }
+
+                if (this.interaction.prompt) {
+                    this.game.message!.setPrompt(this.interaction.prompt, this.interaction.promptOptions, this.interaction.promptAction);
+                }
             }
         }
-    }
-
-    private showMessage(text: string): void {
-        this.game.message!.setText(text, 0x000000, (this.position.y < 5) ? MessagePosition.Bottom : MessagePosition.Top);
     }
 }

@@ -30,11 +30,11 @@ export class Game {
             .load((loader, resources) => {
                 const sheet = resources["assets/spritesheet.json"]?.spritesheet;
                 this.map = new Map(this, sheet!, new Point(1, 2), this.app!.stage);
-                this.message = new Message(this.app!.stage);
+                this.message = new Message(this, this.app!.stage);
                 this.player = new Player(this, sheet!, PlayerColour.Red, this.app!.stage);
                 this.inventory = new Inventory(this, this.app!.stage);
 
-                this.message.setText("You awaken from a deep sleep in a makeshift bed with no idea how you got here. There is a note... it reads:\n\nESCAPE THE FATAL ROOM", 0xCC3333, MessagePosition.Bottom);
+                this.message.setText("You awaken from a deep sleep in a makeshift bed with no idea how you got here. There is a note... it reads:\n\nESCAPE THE FATAL DUNGEON", 0xCC3333);
 
                 this.app!.render();
                 canvas.style.display = "block";

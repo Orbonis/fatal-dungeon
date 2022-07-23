@@ -14,6 +14,10 @@ export interface InteractionData {
 
     itemAlreadyUsed?: boolean;
     itemAlreadyUsedMessage?: string;
+
+    prompt?: string;
+    promptOptions?: string[];
+    promptAction?: (choice: string) => void;
 }
 
 export const MapData = [
@@ -72,7 +76,7 @@ export const MapDataInteraction = [
     [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 3, 0, 0, 0, 0, 0, 0, 0 ],
     [ 0, 2, 0, 0, 0, 0, 0, 0, 1, 0 ],
-    [ 0, 0, 5, 4, 0, 0, 0, 0, 0, 0 ],
+    [ 0, 6, 5, 4, 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
@@ -92,7 +96,7 @@ export class Map {
             itemRequired: "Drawer Key", itemMessage: "You unlocked the drawer! There is an old library card in there.",
             itemAction: () => this.game.inventory!.giveItem("Library Card"),
             itemAlreadyUsed: false,
-            itemAlreadyUsedMessage: "The drawer is empty."
+            itemAlreadyUsedMessage: "There is nothing else in the drawer."
         },
         {
             interaction: true, message: "There is a small key here!",
@@ -106,10 +110,6 @@ export class Map {
             interaction: true, message: "The door is locked. There is a gap though...\nif only I have something thin to open the lock with.",
             itemRequired: "Library Card", itemMessage: "As you push the library card into the gap, you feel something give! You have a moment of triumph before the blade swings down.",
             itemAction: () => {
-                // MapDataInteraction[3][2] = 0;
-                // MapDataCollision[4][2] = false;
-                // this.game.player!.clearInteraction();
-                // this.tiles[1][2][4].texture = this.sheet.textures["door_open.png"]
                 this.game.player!.enabled = false;
                 const showDeath = (ev: KeyboardEvent) => {
                     if (ev.key === " ") {
@@ -118,6 +118,21 @@ export class Map {
                     }
                 };
                 window.addEventListener("keydown", showDeath);
+            }
+        },
+        {
+            interaction: true,
+            prompt: "There is a small hole in the wall there... you think you could fit your hand in it.",
+            promptOptions: [ "Put your hand in", "Leave it alone" ],
+            promptAction: (choice: string) => {
+                if (choice === "Put your hand in") {
+                    MapDataInteraction[3][1] = 0;
+                    MapDataInteraction[3][2] = 0;
+                    MapDataCollision[4][2] = false;
+                    this.game.player!.clearInteraction();
+                    this.tiles[1][2][4].texture = this.sheet.textures["door_open.png"];
+                    this.game.message!.setText("You hear a small click and the door swings open!");
+                }
             }
         },
     ];
