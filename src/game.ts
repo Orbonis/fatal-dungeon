@@ -4,6 +4,7 @@ import { Player, PlayerColour } from "./components/player";
 import { update as TweenUpdate } from "@tweenjs/tween.js";
 import { Message, MessagePosition } from "./components/message";
 import { Inventory } from "./components/inventory";
+import { GlowFilter } from "pixi-filters";
 
 export class Game {
     public app?: Application;
@@ -43,8 +44,9 @@ export class Game {
         );
     }
 
-    public showDeath(): void {
+    public showDeath(final: boolean = false): void {
         this.player!.enabled = false;
+        const filter = new GlowFilter({ color: 0xCC3333, distance: 20, outerStrength: 20, quality: 1 });
         const fade = new Graphics();
         fade.beginFill(0xFFFFFF, 0.8);
         fade.drawRect(0, 0, 1000, 1000);
@@ -53,10 +55,13 @@ export class Game {
         splat.width = 1000;
         splat.height = 1000;
         splat.tint = 0xCC3333;
-        const text = new Text("FATAL MISTAKE", { fill: 0x000000, fontSize: 100, align: "center", fontWeight: "bold" });
+        splat.filters = [ filter ];
+        const message = (final) ? "FATALITY\nIS INEVITABLE" : "FATAL\nMISTAKE";
+        const text = new Text(message, { fill: 0xFFFFFF, fontSize: 100, align: "center", fontWeight: "bold" });
         text.anchor.set(0.5, 0.5);
         text.x = 500;
         text.y = 500;
+        text.filters = [ filter ];
         this.app!.stage.addChild(fade, splat, text);
 
         window.addEventListener("keydown", (ev: KeyboardEvent) => {

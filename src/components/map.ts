@@ -39,7 +39,7 @@ export const MapData = [
         [ undefined, "bed", undefined, undefined, "carpet/90", "carpet/90", "carpet/90", "carpet/90", "carpet/90", "door_closed/270" ],
         [ undefined, undefined, undefined, "planks/0/-10/-10", undefined, undefined, undefined, undefined, undefined, undefined ],
         [ undefined, undefined, "door_closed/0/0/-20", undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
-        [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, "wall_demolished/0/0/-20/-1", undefined, undefined ],
+        [ undefined, "trap_door/0/0/10/-0.8/0.8", undefined, undefined, undefined, undefined, undefined, "wall_demolished/0/0/-20/-1", undefined, undefined ],
         [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
         [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
         [ undefined, "puddle", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
@@ -115,11 +115,11 @@ export class Map {
     private shadows: Graphics[];
     private interactions: InteractionData[] = [
         { interaction: false },
-        { interaction: true, message: "The door is locked!" },
+        { interaction: true, message: "A strong iron door stands before you.\nThere is no lock and no handle. It's basically a wall." },
         { interaction: true, message: "The bed I woke up in is uncomfortable and slightly damp." },
         {
             interaction: true, message: "There is a drawer under the table... it's locked.",
-            itemRequired: "Drawer Key", itemMessage: "You unlocked the drawer! There is an old library card in there.",
+            itemRequired: "Drawer Key", itemMessage: "You unlocked the drawer! There is an old library card in there.\nIt doesn't have a name on it, but does have a colourful logo on the front.",
             itemAction: () => this.game.inventory!.giveItem("Library Card"),
             itemAlreadyUsed: false,
             itemAlreadyUsedMessage: "There is nothing else in the drawer."
@@ -226,13 +226,6 @@ export class Map {
                         this.tiles[1][1][4].height = 80;
                         this.tiles[1][1][4].angle = 90;
                         this.tiles[2][1][4].texture = this.sheet.textures["planks.png"];
-                        this.tiles[1][1][5].texture = this.sheet.textures["puddle.png"];
-                        this.tiles[1][1][5].tint = 0x000000;
-                        this.tiles[1][1][5].width = 80;
-                        this.tiles[1][1][5].height = 80;
-                        this.tiles[2][1][5].texture = this.sheet.textures["planks.png"];
-                        this.tiles[2][1][5].angle = 90;
-                        this.shadows[1].visible = false;
                         break;
                     case "Use your hands":
                         MapDataInteraction[4][1] = 0;
@@ -255,15 +248,20 @@ export class Map {
         {
             interaction: false,
             action: () => {
-                this.game.inventory!.removeItem("Rusty Spade");
+                if (this.tiles[3][7][5].visible) {
+                    this.game.inventory!.removeItem("Rusty Spade");
+                }
                 this.game.player!.teleport(1, 5);
                 this.game.player!.move(1, 0);
+                this.shadows[1].visible = false;
             }
         },
         {
             interaction: false,
             action: () => {
-                this.game.inventory!.giveItem("Rusty Spade");
+                if (this.tiles[3][7][5].visible) {
+                    this.game.inventory!.giveItem("Rusty Spade");
+                }
                 this.game.player!.teleport(1, 4);
                 this.game.player!.move(1, 0);
             }
@@ -275,7 +273,51 @@ export class Map {
             promptAction: (choice: string) => {
                 switch (choice) {
                     case "Move the bookcase":
+                        this.interactions[12].promptOptions!.splice(1, 0, "Look at the books");
                         this.game.message!.setText("You try to move the bookcase, but it's just too heavy.\n You brace yourself, waiting for death... nothing happens. You aren't sure what you were expecting.");
+                        break;
+                    case "Look at the books":
+                        const options = [ "Red, Blue, Green", "Blue, Green, Red", "Green, Red, Blue" ];
+                        if (this.game.inventory!.hasItem("Library Card")) {
+                            options[0] = "Red, Green, Blue!";
+                        }
+                        this.game.message!.setPrompt(
+                            "The books are oddly positioned. You look closer and see they are all on hinges.\nMaybe if you pulled them out in the right order?",
+                            options,
+                            (choice: string) => {
+                                switch (choice) {
+                                    case "Red, Green, Blue!":
+                                        this.game.message!.setText("You remember the library card! You move the books carefully...\nOnce the last book is moved, the bookcase slides to the side and the wall crumbles neatly to the floor.");
+                                        this.tiles[2][7][5].visible = false;
+                                        this.tiles[3][7][5].visible = false;
+                                        MapDataCollisionLeave[5][7] = [false, false, true, false];
+                                        MapDataCollisionLeave[4][7] = false;
+                                        this.game.player!.clearInteraction();
+                                        MapDataInteraction[5][7] = 0;
+                                        MapDataInteraction[4][7] = 14;
+                                        this.game.player!.enabled = false;
+                                        const movePlayer = (ev: KeyboardEvent) => {
+                                            if (ev.key === " ") {
+                                                window.removeEventListener("keydown", movePlayer);
+                                                this.game.player!.move(0, -1);
+                                            }
+                                        }
+                                        window.addEventListener("keydown", movePlayer);
+                                        break;
+                                    default:
+                                        this.game.message!.setText("You pull the books carefully, making sure not to move anything unintentionally.\nAs soon as you move the last book, you hear a click and spike shoot up from the floor impaling you.");
+                                        this.game.player!.enabled = false;
+                                        const showDeath = (ev: KeyboardEvent) => {
+                                            if (ev.key === " ") {
+                                                window.removeEventListener("keydown", showDeath);
+                                                this.game.showDeath(this.game.inventory!.hasItem("Rusty Spade"));
+                                            }
+                                        }
+                                        window.addEventListener("keydown", showDeath);
+                                        break;
+                                }
+                            }
+                        )
                         break;
                 }
             }
@@ -291,14 +333,22 @@ export class Map {
                         this.game.message!.setText("You start digging...");
                         const showNext = (ev: KeyboardEvent) => {
                             if (ev.key === " ") {
-                                this.game.message!.setText("You dig for what feels like hours. Your fingers are bloody and sweat falls from your brow. You are on the brink of collapse when you fingers hit clay.");
+                                if (this.game.inventory!.hasItem("Rusty Spade")) {
+                                    this.game.message!.setText("You dig for what feels like hours. You eventually hit clay and your work is harder, but you persevere. If this doesn't work then it's over. You can feel it.");
+                                } else {
+                                    this.game.message!.setText("You dig for what feels like hours. Your fingers are bloody and sweat falls from your brow. You are on the brink of collapse when you fingers hit clay.");
+                                }
                                 const showNextNext = (ev: KeyboardEvent) => {
                                     if (ev.key === " ") {
-                                        this.game.message!.setText("No...\nThere is no way to get through. You just need to rest. Just for a minute...");
+                                        if (this.game.inventory!.hasItem("Rusty Spade")) {
+                                            this.game.message!.setText("You make it through! The light is bright and warm... You eventually push your way outside.\nYou escape and learn to live your life again. Eventually you die of old age.");
+                                        } else {
+                                            this.game.message!.setText("No...\nThere is no way to get through. You just need to rest. Just for a minute...");
+                                        }
                                         const showDeath = (ev: KeyboardEvent) => {
                                             if (ev.key === " ") {
                                                 window.removeEventListener("keydown", showDeath);
-                                                this.game.showDeath();
+                                                this.game.showDeath(this.game.inventory!.hasItem("Rusty Spade"));
                                             }
                                         }
                                         window.addEventListener("keydown", showDeath);
@@ -312,6 +362,16 @@ export class Map {
                         window.addEventListener("keydown", showNext);
                         break;
                 }
+            }
+        },
+        {
+            interaction: false,
+            message: "You got your Rusty Spade back!",
+            action: () => {
+                MapDataInteraction[4][7] = 0;
+                this.game.inventory!.giveItem("Rusty Spade");
+                this.game.player!.clearInteraction();
+                this.game.player!.enabled = true;
             }
         }
     ];
@@ -349,7 +409,7 @@ export class Map {
         }
 
         const entryway = new Graphics();
-        entryway.beginFill(0x222222);
+        entryway.beginFill(0xEEEEEE);
         entryway.moveTo(100, 400);
         entryway.lineTo(400, 400);
         entryway.lineTo(400, 100);
@@ -360,7 +420,7 @@ export class Map {
         entryway.endFill();
 
         const mainroom = new Graphics();
-        mainroom.beginFill(0x222222);
+        mainroom.beginFill(0xEEEEEE);
         mainroom.moveTo(100, 500);
         mainroom.lineTo(900, 500);
         mainroom.lineTo(900, 900);
@@ -375,6 +435,7 @@ export class Map {
         });
 
         (window as any).hideShadows = () => this.shadows.forEach((x) => x.visible = false);
+        (window as any).hideTile = (l: number, x: number, y: number) => this.tiles[l][x][y].visible = false;
     }
 
     public setTile(layer: number, x: number, y: number, texture: string): void {
