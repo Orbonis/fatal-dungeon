@@ -141,7 +141,7 @@ export class Game {
                 }
             };
             window.addEventListener("keydown", beginCallback);
-        }, 1000);
+        }, 500);
     }
 
     public showDeath(final: boolean = false): void {

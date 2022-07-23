@@ -17,6 +17,8 @@ export class Player {
     private moveTween?: Tween<Sprite>;
     private interaction?: InteractionData;
 
+    private moveQueue: Array<Point>;
+
     constructor(private game: Game, colour: PlayerColour, stage: Container) {
         this.body = new Sprite(this.game.sheet!.textures[`${colour}_character.png`]);
         this.body.width = 100;
@@ -32,6 +34,7 @@ export class Player {
         stage.addChildAt(this.body, 2);
 
         this.position = new Point(0, 0);
+        this.moveQueue = [];
         this.setPosition(this.game.map!.mapData.startPosition.x, this.game.map!.mapData.startPosition.y, true);
 
         window.addEventListener("keydown", (ev: KeyboardEvent) => {
@@ -93,24 +96,34 @@ export class Player {
     }
 
     private setPosition(x: number, y: number, teleport: boolean = false): void {
-        if (this.moveTween) {
-            this.moveTween.stop();
-            this.moveTween = undefined;
-        }
-        
         this.updateInteraction(undefined);
 
         if (teleport) {
             this.body.x = (x * 100) + 50;
             this.body.y = (y * 100) + 50;
+            this.moveQueue = [];
+            if (this.moveTween) {
+                this.moveTween.stop();
+                this.moveTween = undefined;
+            }
         } else {
-            this.moveTween = new Tween(this.body)
-                .to({ x: (x * 100) + 50, y: (y * 100) + 50 }, 200)
-                .onComplete(() => {
-                    const interaction = this.game.map!.checkInteraction(x, y);
-                    this.updateInteraction(interaction);
-                })
-                .start();
+            if (this.moveTween) {
+                this.moveQueue.push(new Point(x, y));
+            } else {
+                this.moveTween = new Tween(this.body)
+                    .to({ x: (x * 100) + 50, y: (y * 100) + 50 }, 200)
+                    .onComplete(() => {
+                        this.moveTween = undefined;
+                        if (this.moveQueue.length > 0) {
+                            const nextMove = this.moveQueue.shift();
+                            this.setPosition(nextMove!.x, nextMove!.y);
+                        } else {
+                            const interaction = this.game.map!.checkInteraction(x, y);
+                            this.updateInteraction(interaction);
+                        }
+                    })
+                    .start();
+            }
         }
 
         this.position.set(x, y);
