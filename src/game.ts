@@ -124,15 +124,25 @@ export class Game {
 
         this.app!.stage.addChild(container);
 
-        const begin = new Text("Press Interact to begin...", textStyle);
+        const begin = new Text("Press           to begin...", textStyle);
         begin.anchor.set(0.5, 0.5);
         begin.x = 750;
         begin.y = 900;
         begin.visible = false;
         container.addChild(begin);
 
+        const spacebarBegin = new Sprite(this.sheet!.textures["ui_spacebar.png"]);
+        spacebarBegin.width = 48 * 2;
+        spacebarBegin.height = 16 * 2;
+        spacebarBegin.anchor.set(1, 0.5);
+        spacebarBegin.x = 765;
+        spacebarBegin.y = 900;
+        spacebarBegin.visible = false;
+        container.addChild(spacebarBegin);
+
         window.setTimeout(() => {
             begin.visible = true;
+            spacebarBegin.visible = true;
             const beginCallback = (ev: KeyboardEvent) => {
                 if (ev.key === " ") {
                     window.removeEventListener("keydown", beginCallback)
@@ -157,7 +167,7 @@ export class Game {
         splat.tint = 0xBB3333;
         splat.filters = [ filter ];
         const message = (final) ? "FATALITY\nIS INEVITABLE" : "FATAL\nMISTAKE";
-        const text = new Text(message, { fill: 0xFFFFFF, fontSize: 100, align: "center", fontWeight: "bold" });
+        const text = new Text(message, { fill: 0xFFFFFF, fontSize: 100, align: "center", fontWeight: "bold", fontFamily: "Edu VIC WA NT Beginner" });
         text.anchor.set(0.5, 0.5);
         text.x = 500;
         text.y = 500;

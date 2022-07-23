@@ -31,6 +31,12 @@ export class Player {
         this.questionMark.visible = false;
         this.body.addChild(this.questionMark);
 
+        new Tween(this.questionMark.scale)
+            .to({ x: 1.5, y: 1.5 }, 500)
+            .repeat(Infinity)
+            .yoyo(true)
+            .start();
+
         stage.addChildAt(this.body, 2);
 
         this.position = new Point(0, 0);
