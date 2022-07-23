@@ -2,8 +2,7 @@ import { Tween } from "@tweenjs/tween.js";
 import { GlowFilter } from "pixi-filters";
 import { Container, Point, Sprite, Spritesheet, Text, TextStyle } from "pixi.js";
 import { Game } from "src/game";
-import { InteractionData, Map } from "./map";
-import { Message, MessagePosition } from "./message";
+import { InteractionData } from "./map";
 
 export enum PlayerColour {
     Red = "red", Green = "green", Purple = "purple", Yellow = "yellow"
@@ -27,13 +26,12 @@ export class Player {
         const filter: GlowFilter = new GlowFilter({ color: 0x000000, distance: 10, quality: 10 });
         const style: TextStyle = new TextStyle({ fontSize: 60, fill: 0xFFFFFF });
         this.questionMark = new Text("?", style);
-        this.questionMark.anchor.set(0.5, 1);
-        this.questionMark.y = -40;
+        this.questionMark.anchor.set(0.5, 0.5);
         this.questionMark.filters = [ filter ];
         this.questionMark.visible = false;
         this.body.addChild(this.questionMark);
 
-        stage.addChild(this.body);
+        stage.addChildAt(this.body, 2);
 
         this.position = new Point(0, 0);
         this.setPosition(this.game.map!.startPosition.x, this.game.map!.startPosition.y, true);
@@ -73,7 +71,8 @@ export class Player {
     }
 
     private move(x: number, y: number): void {
-        if (this.game.map!.canMove(this.position.x + x, this.position.y + y)) {
+        const direction = (x > 0) ? 1 : (x < 0) ? 3 : (y > 0) ? 2 : 0;
+        if (this.game.map!.canLeave(this.position.x, this.position.y, direction) && this.game.map!.canEnter(this.position.x + x, this.position.y + y)) {
             this.setPosition(this.position.x + x, this.position.y + y);
         }
     }
@@ -145,7 +144,7 @@ export class Player {
                     }
                 }
 
-                if (this.interaction.prompt) {
+                if (this.interaction?.prompt) {
                     this.game.message!.setPrompt(this.interaction.prompt, this.interaction.promptOptions, this.interaction.promptAction);
                 }
             }

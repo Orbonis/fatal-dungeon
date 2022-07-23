@@ -34,16 +34,16 @@ export const MapData = [
         [ "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ]
     ],
     [
-        [ "inner_diagonal/180", "wall/180", "wall/180", "wall/180", "wall/180", "wall/180", "wall/180", "wall/180", "wall/180", "inner_diagonal/270" ],
-        [ "wall/90", undefined, "chair/270/-50/0", undefined, "wall/270", undefined, undefined, undefined, undefined, "wall/270" ],
-        [ "wall/90", "bed", undefined, undefined, "wall/270", undefined, undefined, undefined, undefined, "door_closed/270" ],
-        [ "wall/90", undefined, undefined, undefined, "wall/270", undefined, undefined, undefined, undefined, "wall/270" ],
-        [ "wall/90", "wall", "door_closed", "wall", "inner_diagonal", undefined, undefined, undefined, undefined, "wall/270" ],
-        [ "wall/90", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, "wall/270" ],
-        [ "wall/90", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, "wall/270" ],
-        [ "wall/90", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, "wall/270" ],
-        [ "wall/90", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, "wall/270" ],
-        [ "inner_diagonal/90", "wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall", "inner_diagonal" ]
+        [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
+        [ undefined, undefined, "chair/270/-50/0", undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
+        [ undefined, "bed", undefined, undefined, undefined, undefined, undefined, undefined, undefined, "door_closed/270" ],
+        [ undefined, undefined, undefined, "planks/0/-10/-10", undefined, undefined, undefined, undefined, undefined, undefined ],
+        [ undefined, undefined, "door_closed/0/0/-20", undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
+        [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
+        [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
+        [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
+        [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
+        [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ]
     ],
     [
         [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
@@ -55,21 +55,46 @@ export const MapData = [
         [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
         [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
         [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
-        [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
+        [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ]
+    ],
+    [
+        [ "inner_diagonal/180", "wall/180", "wall/180", "wall/180", "wall/180", "wall/180", "wall/180", "wall/180", "wall/180", "inner_diagonal/270" ],
+        [ "wall/90", undefined, undefined, undefined, "wall/270/-20/0", undefined, undefined, undefined, undefined, "wall/270" ],
+        [ "wall/90", undefined, undefined, undefined, "wall/270/-20/0", undefined, undefined, undefined, undefined, "door_closed/270" ],
+        [ "wall/90", undefined, undefined, undefined, "wall/270/-20/0", undefined, undefined, undefined, undefined, "wall/270" ],
+        [ "wall/90", "wall/0/0/-20", undefined, "wall/0/0/-20", "inner_diagonal/0/-20/-20", undefined, undefined, undefined, undefined, "wall/270" ],
+        [ "wall/90", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, "wall/270" ],
+        [ "wall/90", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, "wall/270" ],
+        [ "wall/90", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, "wall/270" ],
+        [ "wall/90", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, "wall/270" ],
+        [ "inner_diagonal/90", "wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall", "inner_diagonal" ]
     ]
 ];
 
-export const MapDataCollision = [
+export const MapDataCollisionEnter = [
     [ true, true, true, true, true, true, true, true, true, true ],
-    [ true, true, false, false, true, false, false, false, false, true ],
-    [ true, false, false, false, true, false, false, false, false, true ],
-    [ true, false, false, false, true, false, false, false, false, true ],
-    [ true, true, true, true, true, false, false, false, false, true ],
+    [ true, true, false, false, false, false, false, false, false, true ],
+    [ true, false, false, false, false, false, false, false, false, true ],
+    [ true, false, false, false, false, false, false, false, false, true ],
+    [ true, false, true, false, false, false, false, false, false, true ],
     [ true, false, false, false, false, false, false, false, false, true ],
     [ true, false, false, false, false, false, false, false, false, true ],
     [ true, false, false, false, false, false, false, false, false, true ],
     [ true, false, false, false, false, false, false, false, false, true ],
     [ true, true, true, true, true, true, true, true, true, true ]
+];
+
+export const MapDataCollisionLeave = [
+    [ false, false, false, false, false, false, false, false, false, false ],
+    [ false, false, false, [false, true, false, false], [false, false, false, true], false, false, false, false, false ],
+    [ false, false, false, [false, true, false, false], [false, false, false, true], false, false, false, false, false ],
+    [ false, [false, false, true, false], false, [false, true, true, false], [false, false, false, true], false, false, false, false, false ],
+    [ false, [true, false, false, false], false, [true, false, false, false], false, false, false, false, false, false ],
+    [ false, false, false, false, false, false, false, false, false, false ],
+    [ false, false, false, false, false, false, false, false, false, false ],
+    [ false, false, false, false, false, false, false, false, false, false ],
+    [ false, false, false, false, false, false, false, false, false, false ],
+    [ false, false, false, false, false, false, false, false, false, false ]
 ];
 
 export const MapDataInteraction = [
@@ -128,9 +153,9 @@ export class Map {
                 if (choice === "Put your hand in") {
                     MapDataInteraction[3][1] = 0;
                     MapDataInteraction[3][2] = 0;
-                    MapDataCollision[4][2] = false;
+                    MapDataCollisionEnter[4][2] = false;
                     this.game.player!.clearInteraction();
-                    this.tiles[1][2][4].texture = this.sheet.textures["door_open.png"];
+                    this.tiles[1][2][4].texture = this.sheet.textures["doorway.png"];
                     this.game.message!.setText("You hear a small click and the door swings open!");
                 }
             }
@@ -138,12 +163,11 @@ export class Map {
     ];
 
     constructor(private game: Game, private sheet: Spritesheet, public startPosition: Point, stage: Container) {
-        const map = new Container();
         this.tiles = [];
         for (let layer = 0; layer < MapData.length; layer++) {
             this.tiles.push([]);
             const layerContainer = new Container();
-            map.addChild(layerContainer);
+            stage.addChild(layerContainer);
             for (let x = 0; x < MapData[layer].length; x++) {
                 this.tiles[layer].push([]);
                 for (let y = 0; y < MapData[layer][x].length; y++) {
@@ -167,16 +191,24 @@ export class Map {
                 }
             }
         }
-        stage.addChild(map);
     }
 
     public setTile(layer: number, x: number, y: number, texture: string): void {
         this.tiles[layer][x][y].texture = this.sheet.textures[`${texture}.png`];
     }
 
-    public canMove(x: number, y: number): boolean {
+    public canLeave(x: number, y: number, direction: number): boolean {
+        const leaveCollision = MapDataCollisionLeave[y][x];
+        if (typeof(leaveCollision) === "boolean") {
+            return !leaveCollision;
+        } else {
+            return !leaveCollision[direction];
+        }
+    }
+
+    public canEnter(x: number, y: number): boolean {
         if (y > 0 && y < MapData[0].length && x > 0 && x < MapData[0][0].length) {
-            return !MapDataCollision[y][x];
+            return !MapDataCollisionEnter[y][x];
         } else {
             return false;
         }
