@@ -6,6 +6,7 @@ import { Message, MessagePosition } from "./components/message";
 import { Inventory } from "./components/inventory";
 import { GlowFilter } from "pixi-filters";
 import { MapData } from "./components/map-data";
+import { LoadFont } from "./utils/load-font";
 
 export class Game {
     public app?: Application;
@@ -27,22 +28,24 @@ export class Game {
             transparent: true
         });
 
-        Loader.shared
-            .add("assets/spritesheet.json")
-            .load((loader, resources) => {
-                this.sheet = resources["assets/spritesheet.json"]?.spritesheet;
-                this.map = new Map(this, new MapData(this), this.app!.stage);
-                this.message = new Message(this, this.app!.stage);
-                this.player = new Player(this, PlayerColour.Red, this.app!.stage);
-                this.inventory = new Inventory(this, this.app!.stage);
-
-                this.message.setText("You awaken from a deep sleep in a makeshift bed with no idea how you got here. There is a note... it reads:\n\nESCAPE THE FATAL DUNGEON", undefined, 0xCC3333);
-
-                this.app!.render();
-                canvas.style.display = "block";
-                requestAnimationFrame((time) => this.render(time));
-            }
-        );
+        LoadFont("Edu VIC WA NT Beginner").then(() => {
+            Loader.shared
+                .add("assets/spritesheet.json")
+                .load((loader, resources) => {
+                    this.sheet = resources["assets/spritesheet.json"]?.spritesheet;
+                    this.map = new Map(this, new MapData(this), this.app!.stage);
+                    this.message = new Message(this, this.app!.stage);
+                    this.player = new Player(this, PlayerColour.Red, this.app!.stage);
+                    this.inventory = new Inventory(this, this.app!.stage);
+    
+                    this.message.setText("You awaken from a deep sleep in a makeshift bed with no idea how you got here. There is a note... it reads:\n\nESCAPE THE FATAL DUNGEON", undefined, 0xCC3333);
+    
+                    this.app!.render();
+                    canvas.style.display = "block";
+                    requestAnimationFrame((time) => this.render(time));
+                }
+            );
+        });
     }
 
     public showDeath(final: boolean = false): void {
