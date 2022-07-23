@@ -1,0 +1,3 @@
+[submodule "libs/core-game"]
+	path = libs/core-game
+	url = git@bitbucket.org:orbonis-games/core-game.git
