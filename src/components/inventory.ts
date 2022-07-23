@@ -1,13 +1,19 @@
 import { Container, Graphics, Text, TextStyle } from "pixi.js";
 import { Game } from "src/game";
 
+export enum InventoryItems {
+    DrawerKey = "Small Key",
+    LibraryCard = "Library Card",
+    RustySpade = "Rusty Spade"
+}
+
 export class Inventory {
     private box: Graphics;
     private title: Text;
     private instructions: Text;
     private inventory: Text;
 
-    private items: string[];
+    private items: InventoryItems[];
 
     constructor(private game: Game, stage: Container) {
         this.box = new Graphics();
@@ -41,17 +47,17 @@ export class Inventory {
         this.updateInventoryText();
     }
 
-    public giveItem(item: string): void {
+    public giveItem(item: InventoryItems): void {
         this.items.push(item);
         this.updateInventoryText();
     }
 
-    public removeItem(item: string): void {
+    public removeItem(item: InventoryItems): void {
         this.items = this.items.filter((x) => x !== item);
         this.updateInventoryText();
     }
 
-    public hasItem(item: string): boolean {
+    public hasItem(item: InventoryItems): boolean {
         return this.items.some((x) => x === item);
     }
 

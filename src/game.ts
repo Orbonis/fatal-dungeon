@@ -5,6 +5,7 @@ import { update as TweenUpdate } from "@tweenjs/tween.js";
 import { Message, MessagePosition } from "./components/message";
 import { Inventory } from "./components/inventory";
 import { GlowFilter } from "pixi-filters";
+import { MapData } from "./components/map-data";
 
 export class Game {
     public app?: Application;
@@ -30,7 +31,7 @@ export class Game {
             .add("assets/splat.png")
             .load((loader, resources) => {
                 const sheet = resources["assets/spritesheet.json"]?.spritesheet;
-                this.map = new Map(this, sheet!, new Point(1, 2), this.app!.stage);
+                this.map = new Map(this, sheet!, new MapData(this), this.app!.stage);
                 this.message = new Message(this, this.app!.stage);
                 this.player = new Player(this, sheet!, PlayerColour.Red, this.app!.stage);
                 this.inventory = new Inventory(this, this.app!.stage);

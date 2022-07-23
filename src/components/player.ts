@@ -2,7 +2,7 @@ import { Tween } from "@tweenjs/tween.js";
 import { GlowFilter } from "pixi-filters";
 import { Container, Point, Sprite, Spritesheet, Text, TextStyle } from "pixi.js";
 import { Game } from "src/game";
-import { InteractionData } from "./map";
+import { InteractionData } from "./map-data";
 
 export enum PlayerColour {
     Red = "red", Green = "green", Purple = "purple", Yellow = "yellow"
@@ -34,7 +34,7 @@ export class Player {
         stage.addChildAt(this.body, 2);
 
         this.position = new Point(0, 0);
-        this.setPosition(this.game.map!.startPosition.x, this.game.map!.startPosition.y, true);
+        this.setPosition(this.game.map!.mapData.startPosition.x, this.game.map!.mapData.startPosition.y, true);
 
         window.addEventListener("keydown", (ev: KeyboardEvent) => {
             if (this.enabled) {
