@@ -135,13 +135,13 @@ export class Message {
                     updateSelectionHighlight();
                     break;
                 case " ":
-                    if (action) {
-                        action(options[selectedOption]);
-                    }
                     this.prompt.visible = false;
                     this.game.player!.enabled = true;
                     optionsText.forEach((x) => x.destroy());
                     window.removeEventListener("keydown", controlPrompt);
+                    if (action) {
+                        action(options[selectedOption]);
+                    }
                     break;
 
             }

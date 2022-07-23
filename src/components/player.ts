@@ -70,11 +70,15 @@ export class Player {
         return this.position;
     }
 
-    private move(x: number, y: number): void {
+    public move(x: number, y: number): void {
         const direction = (x > 0) ? 1 : (x < 0) ? 3 : (y > 0) ? 2 : 0;
         if (this.game.map!.canLeave(this.position.x, this.position.y, direction) && this.game.map!.canEnter(this.position.x + x, this.position.y + y)) {
             this.setPosition(this.position.x + x, this.position.y + y);
         }
+    }
+
+    public teleport(x: number, y: number): void {
+        this.setPosition(x, y, true);
     }
 
     private setPosition(x: number, y: number, teleport: boolean = false): void {
@@ -88,8 +92,6 @@ export class Player {
         if (teleport) {
             this.body.x = (x * 100) + 50;
             this.body.y = (y * 100) + 50;
-            const interaction = this.game.map!.checkInteraction(x, y);
-            this.updateInteraction(interaction);
         } else {
             this.moveTween = new Tween(this.body)
                 .to({ x: (x * 100) + 50, y: (y * 100) + 50 }, 200)
