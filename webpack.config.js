@@ -62,7 +62,9 @@ const data = {
     },
     plugins: [
         new HTMLWebpackPlugin({
-            title: "Fatal"
+            title: "Fatal",
+            cache: false,
+            hash: true
         }),
         new CopyWebpackPlugin({
             patterns: [

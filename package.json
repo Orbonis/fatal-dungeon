@@ -13,7 +13,7 @@
   },
   "author": "Dean Rutter",
   "license": "ISC",
-  "homepage": "https://github.com/Orbonis/fatal-dungeon",
+  "homepage": "https://orbonis.co.uk/games/fatal/",
   "devDependencies": {
     "@types/intersects": "^2.5.0",
     "@types/lodash": "^4.14.165",
