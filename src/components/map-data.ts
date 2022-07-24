@@ -22,7 +22,7 @@ export class MapData {
             [ "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ],
             [ "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ],
             [ "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ],
-            [ "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ],
+            [ "tiles", "grass", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ],
             [ "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ]
         ],
         [
@@ -34,8 +34,8 @@ export class MapData {
             [ undefined, "trap_door/0/0/10/-0.8/0.8", undefined, undefined, undefined, undefined, undefined, "wall_demolished/0/0/-20/-1", undefined, undefined ],
             [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
             [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
-            [ undefined, "dirt", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
-            [ undefined, "plants/0/5/-95/0.7/0.7", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ]
+            [ undefined, "plants", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
+            [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ]
         ],
         [
             [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
@@ -119,7 +119,7 @@ export class MapData {
             interaction: false,
             action: () => null,
             extraData: {},
-            enabled: true
+            enabled: false
         },
         {
             interaction: true,

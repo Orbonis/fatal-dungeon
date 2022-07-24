@@ -88,6 +88,12 @@ export class Player {
         } else {
             if (this.game.map!.canLeave(this.position.x, this.position.y, direction) && this.game.map!.canEnter(this.position.x + x, this.position.y + y)) {
                 this.setPosition(this.position.x + x, this.position.y + y);
+            } else {
+                this.moveQueue = [];
+                const interaction = this.game.map!.checkInteraction(this.position.x, this.position.y);
+                if (interaction && interaction.enabled) {
+                    this.updateInteraction(interaction);
+                }
             }
         }
     }
@@ -119,19 +125,20 @@ export class Player {
                 this.moveTween = undefined;
             }
         } else {
-            if (this.moveTween) {
-                this.moveQueue.push(new Point(x, y));
-            } else {
+            if (!this.moveTween) {
                 this.moveTween = new Tween(this.body)
                     .to({ x: (x * 100) + 50, y: (y * 100) + 50 }, 200)
                     .onComplete(() => {
                         this.moveTween = undefined;
-                        if (this.moveQueue.length > 0) {
-                            const nextMove = this.moveQueue.shift();
-                            this.move(nextMove!.x, nextMove!.y);
-                        } else {
-                            const interaction = this.game.map!.checkInteraction(x, y);
+                        const interaction = this.game.map!.checkInteraction(x, y);
+                        if (interaction && interaction.enabled) {
                             this.updateInteraction(interaction);
+                            this.moveQueue = [];
+                        } else {
+                            if (this.moveQueue.length > 0) {
+                                const nextMove = this.moveQueue.shift();
+                                this.move(nextMove!.x, nextMove!.y);
+                            }
                         }
                     })
                     .start();
