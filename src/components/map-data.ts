@@ -184,18 +184,33 @@ export class MapData {
         },
         "bedroom_door": {
             interaction: true,
-            action: () => {
-                if (this.game.inventory?.hasItem(InventoryItems.LibraryCard)) {
-                    this.game.message?.setText(
-                        "As you push the library card into the gap, you feel something give! You have a moment of triumph before the blade swings down.",
-                        () => {
-                            this.game.showDeath();
-                        }
-                    );
-
-                } else {
-                    this.game.message?.setText("The door is locked. There is a gap though...\nif only I have something thin to open the lock with.");
-                }
+            action: (interaction) => {
+                this.game.message?.setText(
+                    "The door is locked. There is a gap though...\nif only I have something thin to open the lock with.",
+                () => {
+                    if (this.game.inventory?.hasItem(InventoryItems.LibraryCard)) {
+                        this.game.message?.setPrompt(
+                            "You think the Library Card would fit...",
+                            [ "Try to open the door", "Leave it alone" ],
+                            (choice) => {
+                                switch (choice) {
+                                    case "Try to open the door":
+                                        this.game.message?.setText(
+                                            "As you push the library card into the gap, you feel something give! You have a moment of triumph before the blade swings down.",
+                                            () => {
+                                                this.game.showDeath();
+                                            }
+                                        );
+                                        break;
+                                    case "Leave it alone":
+                                        this.game.player?.updateInteraction(interaction);
+                                        break;
+                                }
+                            }
+                        )
+    
+                    }
+                });
             },
             extraData: {},
             enabled: true
