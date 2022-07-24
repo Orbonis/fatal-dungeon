@@ -40,31 +40,18 @@ export class Map {
             }
         }
 
-        const entryway = new Graphics();
-        entryway.beginFill(0xEEEEEE);
-        entryway.moveTo(100, 400);
-        entryway.lineTo(400, 400);
-        entryway.lineTo(400, 100);
-        entryway.lineTo(900, 100);
-        entryway.lineTo(900, 500);
-        entryway.lineTo(100, 500);
-        entryway.lineTo(100, 400);
-        entryway.endFill();
-
-        const mainroom = new Graphics();
-        mainroom.beginFill(0xEEEEEE);
-        mainroom.moveTo(100, 500);
-        mainroom.lineTo(900, 500);
-        mainroom.lineTo(900, 900);
-        mainroom.lineTo(100, 900);
-        mainroom.lineTo(100, 500);
-        mainroom.endFill();
-
-        this.shadows = [ entryway, mainroom ];
-
-        this.shadows.forEach((x) => {
-            stage.addChildAt(x, 3);
-        });
+        this.shadows = [];
+        for (const shadow of this.mapData.shadows) {
+            const graphic = new Graphics();
+            graphic.beginFill(0xEEEEEE);
+            graphic.moveTo(shadow[0][0] * 100, shadow[0][1] * 100);
+            for (let i = 1; i < shadow.length; i++) {
+                graphic.lineTo(shadow[i][0] * 100, shadow[i][1] * 100);
+            }
+            graphic.endFill();
+            this.shadows.push(graphic);
+            stage.addChildAt(graphic, 3);
+        }
     }
 
     public setTile(layer: number, x: number, y: number, texture: string): void {

@@ -114,6 +114,11 @@ export class MapData {
         [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
     ];
 
+    public shadows = [
+        [ [1, 4], [4, 4], [4, 1], [9, 1], [9, 5], [1, 5], [1, 4] ],
+        [ [1, 5], [9, 5], [9, 9], [1, 9], [1, 5] ]
+    ];
+
     public events: InteractionData[] = [
         {
             interaction: false,
