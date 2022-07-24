@@ -409,7 +409,7 @@ export class MapData {
                                     "You try to move the bookcase, but it's just too heavy.\n You brace yourself, waiting for death... nothing happens. You aren't sure what you were expecting.",
                                     () => {
                                         interaction.extraData["triedmove"] = true;
-                                        this.game.player?.updateInteraction(interaction);
+                                        this.game.player?.updateInteraction(interaction, true);
                                     }
                                 );
                                 break;

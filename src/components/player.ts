@@ -103,14 +103,14 @@ export class Player {
         this.setPosition(x, y, true);
     }
 
-    public updateInteraction(interaction?: InteractionData): void {
+    public updateInteraction(interaction?: InteractionData, keypress: boolean = false): void {
         this.interaction = interaction;
         if (interaction) {
             this.questionMark.visible = interaction.interaction && interaction.enabled;
-            this.activateInteraction(false);
+            this.activateInteraction(keypress);
         } else {
             this.questionMark.visible = false;
-            this.activateInteraction(false);
+            this.activateInteraction(keypress);
         }
     }
 
