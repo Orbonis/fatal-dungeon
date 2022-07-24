@@ -14,16 +14,16 @@ export class MapData {
 
     public tiles = [
         [
-            [ "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ],
-            [ "tiles", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "tiles" ],
-            [ "tiles", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "tiles" ],
-            [ "tiles", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "tiles" ],
-            [ "tiles", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "tiles" ],
-            [ "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ],
-            [ "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ],
-            [ "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ],
-            [ "tiles", "grass", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ],
-            [ "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles" ]
+            [ "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile" ],
+            [ "tile", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "tile" ],
+            [ "tile", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "tile" ],
+            [ "tile", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "tile" ],
+            [ "tile", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "tile" ],
+            [ "tile", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tile" ],
+            [ "tile", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tile" ],
+            [ "tile", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tile" ],
+            [ "tile", "grass", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tiles", "tile" ],
+            [ "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile" ]
         ],
         [
             [ undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined ],
