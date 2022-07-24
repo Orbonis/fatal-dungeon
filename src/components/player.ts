@@ -130,15 +130,22 @@ export class Player {
                     .to({ x: (x * 100) + 50, y: (y * 100) + 50 }, 200)
                     .onComplete(() => {
                         this.moveTween = undefined;
+
                         const interaction = this.game.map!.checkInteraction(x, y);
                         if (interaction && interaction.enabled) {
-                            this.updateInteraction(interaction);
-                            this.moveQueue = [];
-                        } else {
-                            if (this.moveQueue.length > 0) {
-                                const nextMove = this.moveQueue.shift();
-                                this.move(nextMove!.x, nextMove!.y);
+                            if (!interaction.interaction) {
+                                this.updateInteraction(interaction);
+                                this.moveQueue = [];
+                            } else {
+                                if (this.moveQueue.length === 0) {
+                                    this.updateInteraction(interaction);
+                                }
                             }
+                        }
+
+                        if (this.moveQueue.length > 0) {
+                            const nextMove = this.moveQueue.shift();
+                            this.move(nextMove!.x, nextMove!.y);
                         }
                     })
                     .start();
