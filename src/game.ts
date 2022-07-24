@@ -1,12 +1,12 @@
-import { Application, Container, Graphics, Loader, NineSlicePlane, Point, Sprite, Spritesheet, Text, TextStyle } from "pixi.js";
+import { Application, Container, Graphics, Loader, NineSlicePlane, Sprite, Spritesheet, Text, TextStyle } from "pixi.js";
 import { Map } from "./components/map";
 import { Player, PlayerColour } from "./components/player";
 import { update as TweenUpdate } from "@tweenjs/tween.js";
-import { Message, MessagePosition } from "./components/message";
+import { Message } from "./components/message";
 import { Inventory } from "./components/inventory";
-import { GlowFilter } from "pixi-filters";
+import { OutlineFilter } from "pixi-filters";
 import { MapData } from "./components/map-data";
-import { LoadFont } from "./utils/load-font";
+import { LoadFonts } from "./utils/load-font";
 
 export class Game {
     public app?: Application;
@@ -28,7 +28,7 @@ export class Game {
             transparent: true
         });
 
-        LoadFont("Edu VIC WA NT Beginner").then(() => {
+        LoadFonts("Edu VIC WA NT Beginner", "Permanent Marker").then(() => {
             Loader.shared
                 .add("assets/spritesheet.json")
                 .load((loader, resources) => {
@@ -156,7 +156,9 @@ export class Game {
 
     public showDeath(final: boolean = false): void {
         this.player?.setEnabled(false, "death");
-        const filter = new GlowFilter({ color: 0xBB3333, distance: 20, outerStrength: 20, quality: 1 });
+        const blackOutline = new OutlineFilter(10, 0x000000, 1);
+        const redOutline = new OutlineFilter(10, 0xBB3333, 1);
+        redOutline.padding = 5;
         const fade = new Graphics();
         fade.beginFill(0xFFFFFF, 0.8);
         fade.drawRect(0, 0, 1000, 1000);
@@ -165,14 +167,17 @@ export class Game {
         splat.width = 1000;
         splat.height = 1000;
         splat.tint = 0xBB3333;
-        splat.filters = [ filter ];
         const message = (final) ? "FATALITY\nIS INEVITABLE" : "FATAL\nMISTAKE";
-        const text = new Text(message, { fill: 0xFFFFFF, fontSize: 100, align: "center", fontWeight: "bold", fontFamily: "Edu VIC WA NT Beginner" });
+        const text = new Text(message, { fill: 0xFFFFFF, fontSize: 100, align: "center", fontWeight: 400, fontFamily: "Permanent Marker" });
         text.anchor.set(0.5, 0.5);
-        text.x = 500;
-        text.y = 500;
-        text.filters = [ filter ];
-        this.app!.stage.addChild(fade, splat, text);
+        text.x = 470;
+        text.y = 470;
+        text.filters = [ redOutline ];
+        const container = new Container();
+        container.addChild(splat, text);
+        container.filters = [ blackOutline ];
+        container.cacheAsBitmap = true;
+        this.app!.stage.addChild(fade, container);
 
         window.addEventListener("keydown", (ev: KeyboardEvent) => {
             if (ev.key === " ") {

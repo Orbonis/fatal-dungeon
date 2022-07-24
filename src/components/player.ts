@@ -15,6 +15,7 @@ export class Player {
     private questionMark: Text;
     private position: Point;
     private moveTween?: Tween<Sprite>;
+    private bobTween?: Tween<Sprite>;
     private interaction?: InteractionData;
 
     private moveQueue: Array<Point>;
@@ -126,6 +127,19 @@ export class Player {
             }
         } else {
             if (!this.moveTween) {
+                if (this.bobTween) {
+                    this.body.width = 100;
+                    this.body.height = 100;
+                    this.bobTween.stop();
+                    this.bobTween = undefined;
+                }
+                this.bobTween = new Tween(this.body)
+                    .to({ width: 110, height: 110 }, 40)
+                    .repeat(3)
+                    .yoyo(true)
+                    .onComplete(() => this.bobTween = undefined)
+                    .start();
+
                 this.moveTween = new Tween(this.body)
                     .to({ x: (x * 100) + 50, y: (y * 100) + 50 }, 200)
                     .onComplete(() => {

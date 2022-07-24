@@ -30,3 +30,17 @@ export const LoadFont = (family: string): Promise<void> => {
         }
     });
 }
+
+export const LoadFonts = (...families: string[]): Promise<void> => {
+    return new Promise((resolve) => {
+        let count = families.length - 1;
+        families.forEach((family) => {
+            LoadFont(family).then(() => {
+                count--;
+                if (count === 0) {
+                    resolve();
+                }
+            });
+        });
+    });
+}
