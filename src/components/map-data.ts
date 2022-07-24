@@ -173,7 +173,7 @@ export class MapData {
         {
             interaction: true,
             action: (interaction) => {
-                this.game.message?.setText("There is a small key buried in these planks.", () => {
+                this.game.message?.setText("You look through the pile of debris.\nThere is a small key buried under some planks!", () => {
                     this.game.inventory?.giveItem(InventoryItems.DrawerKey);
                     interaction.enabled = false;
                 });
@@ -208,16 +208,20 @@ export class MapData {
                     (choice) => {
                         switch (choice) {
                             case "Put your hand in":
-                                this.interactions[3][1] = 0;
-                                this.interactions[3][2] = 0;
-                                this.collisionEnter[4][2] = false;
-                                this.game.map!.shadows[0].visible = false;
-                                this.game.map!.tiles[3][2][4].texture = this.game.sheet!.textures["doorway.png"];
-                                this.game.map!.tiles[3][7][5].texture = this.game.sheet!.textures["wall_damaged.png"];
-                                for (let x = 1; x < 9; x++) {
-                                    this.game.map!.tiles[3][x][5].alpha = 1;
-                                }
-                                this.game.message!.setText("You hear a small click and the door swings open!");
+                                this.game.message?.setText([
+                                    "As you push your arm into the hole, you feel something crawl quickly over your hand and you brush against a small switch...",
+                                    "You hear a small click and the door swings open!"
+                                ], () => {
+                                    this.interactions[3][1] = 0;
+                                    this.interactions[3][2] = 0;
+                                    this.collisionEnter[4][2] = false;
+                                    this.game.map!.shadows[0].visible = false;
+                                    this.game.map!.tiles[3][2][4].texture = this.game.sheet!.textures["doorway.png"];
+                                    this.game.map!.tiles[3][7][5].texture = this.game.sheet!.textures["wall_damaged.png"];
+                                    for (let x = 1; x < 9; x++) {
+                                        this.game.map!.tiles[3][x][5].alpha = 1;
+                                    }
+                                });
                                 break;
                             case "Leave it alone":
                                 this.game.player?.updateInteraction(interaction);
