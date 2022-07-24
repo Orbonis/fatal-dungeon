@@ -1,3 +1,4 @@
+import { Tween } from "@tweenjs/tween.js";
 import { Point } from "pixi.js";
 import { Game } from "src/game";
 import { InventoryItems } from "./inventory";
@@ -102,16 +103,16 @@ export class MapData {
     ];
     
     public interactions = [
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 3, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 2, 0, 0, 0, 0, 8, 0, 1, 0 ],
-        [ 0, 6, 5, 4, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 9, 0, 0, 0, 0, 0, 7, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 12, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 13, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+        [ "none", "none", "none", "none", "none", "none", "none", "none", "none", "none" ],
+        [ "none", "none", "drawer", "none", "none", "none", "none", "none", "none", "none" ],
+        [ "none", "bed", "none", "none", "none", "none", "chest", "none", "false_exit", "none" ],
+        [ "none", "mystery_hole", "bedroom_door", "debris", "none", "none", "none", "none", "none", "none" ],
+        [ "none", "loose_floorboard", "none", "none", "none", "none", "none", "broken_wall", "none", "none" ],
+        [ "none", "none", "none", "none", "none", "none", "none", "bookcase", "none", "none" ],
+        [ "none", "none", "none", "none", "none", "none", "none", "none", "none", "none" ],
+        [ "none", "none", "none", "none", "none", "none", "none", "none", "none", "none" ],
+        [ "none", "dirt", "none", "none", "none", "none", "none", "none", "none", "none" ],
+        [ "none", "none", "none", "none", "none", "none", "none", "none", "none", "none" ]
     ];
 
     public shadows = [
@@ -119,14 +120,14 @@ export class MapData {
         [ [1, 5], [9, 5], [9, 9], [1, 9], [1, 5] ]
     ];
 
-    public events: InteractionData[] = [
-        {
+    public events: { [key: string]: InteractionData } = {
+        "none": {
             interaction: false,
             action: () => null,
             extraData: {},
             enabled: false
         },
-        {
+        "false_exit": {
             interaction: true,
             action: () => {
                 this.game.message?.setText("A strong iron door stands before you.\nThere is no lock and no handle. It's basically a wall.");
@@ -134,7 +135,7 @@ export class MapData {
             extraData: {},
             enabled: true
         },
-        {
+        "bed": {
             interaction: true,
             action: () => {
                 this.game.message?.setText("The bed I woke up in is uncomfortable and slightly damp.");
@@ -142,7 +143,7 @@ export class MapData {
             extraData: {},
             enabled: true
         },
-        {
+        "drawer": {
             interaction: true,
             action: (interaction) => {
                 if (interaction.extraData["open"]) {
@@ -170,7 +171,7 @@ export class MapData {
             },
             enabled: true
         },
-        {
+        "debris": {
             interaction: true,
             action: (interaction) => {
                 this.game.message?.setText("You look through the pile of debris.\nThere is a small key buried under some planks!", () => {
@@ -181,7 +182,7 @@ export class MapData {
             extraData: {},
             enabled: true
         },
-        {
+        "bedroom_door": {
             interaction: true,
             action: () => {
                 if (this.game.inventory?.hasItem(InventoryItems.LibraryCard)) {
@@ -199,7 +200,7 @@ export class MapData {
             extraData: {},
             enabled: true
         },
-        {
+        "mystery_hole": {
             interaction: true,
             action: (interaction) => {
                 this.game.message?.setPrompt(
@@ -212,8 +213,8 @@ export class MapData {
                                     "As you push your arm into the hole, you feel something crawl quickly over your hand and you brush against a small switch...",
                                     "You hear a small click and the door swings open!"
                                 ], () => {
-                                    this.interactions[3][1] = 0;
-                                    this.interactions[3][2] = 0;
+                                    this.interactions[3][1] = "none";
+                                    this.interactions[3][2] = "none";
                                     this.collisionEnter[4][2] = false;
                                     this.game.map!.shadows[0].visible = false;
                                     this.game.map!.tiles[3][2][4].texture = this.game.sheet!.textures["doorway.png"];
@@ -233,7 +234,7 @@ export class MapData {
             enabled: true,
             extraData: {}
         },
-        {
+        "broken_wall": {
             interaction: true,
             action: (interaction) => {
                 this.game.message!.setPrompt(
@@ -256,7 +257,7 @@ export class MapData {
             enabled: true,
             extraData: {}
         },
-        {
+        "chest": {
             interaction: true,
             action: (interaction) => {
                 this.game.message?.setPrompt(
@@ -290,7 +291,7 @@ export class MapData {
             enabled: true,
             extraData: {}
         },
-        {
+        "loose_floorboard": {
             interaction: false,
             action: () => {
                 const options = [ "Use your hands", "Leave it alone" ];
@@ -303,8 +304,8 @@ export class MapData {
                     (choice: string) => {
                         switch (choice) {
                             case "Use the Rusty Spade":
-                                this.interactions[4][1] = 10;
-                                this.interactions[5][1] = 11;
+                                this.interactions[4][1] = "broken_passage";
+                                this.interactions[5][1] = "trap_door";
                                 this.game.message!.setText("You begin to pry the board up. There is a loud crack and the boards break revealing an underground passage. It's a tight fit. You'll have to leave the Rusty Spade behind.");
                                 this.game.player!.move(1, 0);
                                 this.game.map!.tiles[1][1][4].texture = this.game.sheet!.textures["puddle.png"];
@@ -313,6 +314,23 @@ export class MapData {
                                 this.game.map!.tiles[1][1][4].height = 80;
                                 this.game.map!.tiles[1][1][4].angle = 90;
                                 this.game.map!.tiles[2][1][4].texture = this.game.sheet!.textures["planks.png"];
+
+                                this.game.map!.tiles[1][2][4].texture = this.game.sheet!.textures["eyes.png"];
+                                this.game.map!.tiles[1][2][4].tint = 0xFF0000;
+                                this.game.map!.tiles[1][2][4].width = 100;
+                                this.game.map!.tiles[1][2][4].height = 150;
+                                this.game.map!.tiles[1][2][4].x -= 80;
+                                this.game.map!.tiles[1][2][4].y += 20;
+
+                                const blink = () => {
+                                    this.game.map!.tiles[1][2][4].visible = false;
+                                    window.setTimeout(() => {
+                                        this.game.map!.tiles[1][2][4].visible = true;
+                                        window.setTimeout(blink, 500 + (Math.random() * 2000));
+                                    }, 200);
+                                };
+
+                                window.setTimeout(blink, 500 + (Math.random() * 2000));
                                 break;
                             case "Use your hands":
                                 this.game.message!.setText(
@@ -332,7 +350,7 @@ export class MapData {
             enabled: true,
             extraData: {}
         },
-        {
+        "broken_passage": {
             interaction: false,
             action: () => {
                 if (this.game.map!.tiles[3][7][5].visible) {
@@ -346,7 +364,7 @@ export class MapData {
             enabled: true,
             extraData: {}
         },
-        {
+        "trap_door": {
             interaction: false,
             action: () => {
                 if (this.game.map!.tiles[3][7][5].visible) {
@@ -359,7 +377,7 @@ export class MapData {
             enabled: true,
             extraData: {}
         },
-        {
+        "bookcase": {
             interaction: true,
             action: (interaction) => {
                 const options = [ "Move the bookcase", "Leave it alone" ];
@@ -401,8 +419,8 @@ export class MapData {
                                                         this.game.map!.tiles[3][7][5].visible = false;
                                                         this.collisionLeave[5][7] = [false, false, true, false];
                                                         this.collisionLeave[4][7] = false;
-                                                        this.interactions[5][7] = 0;
-                                                        this.interactions[4][7] = 14;
+                                                        this.interactions[5][7] = "none";
+                                                        this.interactions[4][7] = "wall_broken";
                                                         this.game.player?.setEnabled(false, "bookcase");
                                                         this.game.player!.move(0, -1);
                                                     }
@@ -435,7 +453,7 @@ export class MapData {
                 "triedmove": false
             }
         },
-        {
+        "dirt": {
             interaction: true,
             action: (interaction) => {
                 this.game.message?.setPrompt(
@@ -472,7 +490,7 @@ export class MapData {
             enabled: true,
             extraData: {}
         },
-        {
+        "wall_broken": {
             interaction: false,
             action: (interaction) => {
                 this.game.message?.setText(
@@ -488,7 +506,7 @@ export class MapData {
             enabled: true,
             extraData: {}
         }
-    ];
+    };
 
     constructor(private game: Game) {
 
