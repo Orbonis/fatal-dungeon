@@ -64,7 +64,8 @@ const data = {
         new HTMLWebpackPlugin({
             title: "Fatal Dungeon",
             cache: false,
-            hash: true
+            hash: true,
+            favicon: "assets/favicon.ico"
         }),
         new CopyWebpackPlugin({
             patterns: [
