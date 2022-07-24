@@ -62,7 +62,7 @@ const data = {
     },
     plugins: [
         new HTMLWebpackPlugin({
-            title: "Fatal",
+            title: "Fatal Dungeon",
             cache: false,
             hash: true
         }),
