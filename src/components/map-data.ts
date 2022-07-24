@@ -196,7 +196,7 @@ export class MapData {
         },
         {
             interaction: true,
-            action: () => {
+            action: (interaction) => {
                 this.game.message?.setPrompt(
                     "There is a small hole in the wall there... you think you could fit your hand in it.",
                     [ "Put your hand in", "Leave it alone" ],
@@ -214,6 +214,9 @@ export class MapData {
                                 }
                                 this.game.message!.setText("You hear a small click and the door swings open!");
                                 break;
+                            case "Leave it alone":
+                                this.game.player?.updateInteraction(interaction);
+                                break;
                         }
                     }
                 )
@@ -223,7 +226,7 @@ export class MapData {
         },
         {
             interaction: true,
-            action: () => {
+            action: (interaction) => {
                 this.game.message!.setPrompt(
                     "There are a few large cracks in this wall. Odd.",
                     [ "Push on the wall", "Leave it alone" ],
@@ -235,6 +238,8 @@ export class MapData {
                                     this.game.showDeath();
                                 }
                             );
+                        } else {
+                            this.game.player?.updateInteraction(interaction);
                         }
                     }
                 )
@@ -265,6 +270,9 @@ export class MapData {
                                     }
                                 };
                                 window.addEventListener("keydown", showDeath);
+                                break;
+                            case "Leave it alone":
+                                this.game.player?.updateInteraction(interaction);
                                 break;
                         }
                     }
@@ -392,6 +400,7 @@ export class MapData {
                                                 );
                                                 break;
                                             case "Leave it alone":
+                                                this.game.player?.updateInteraction(interaction);
                                                 break;
                                             default:
                                                 this.game.message!.setText(
@@ -405,6 +414,9 @@ export class MapData {
                                     }
                                 )
                                 break;
+                            case "Leave it alone":
+                                this.game.player?.updateInteraction(interaction);
+                                break;
                         }
                     }
                 )
@@ -416,7 +428,7 @@ export class MapData {
         },
         {
             interaction: true,
-            action: () => {
+            action: (interaction) => {
                 this.game.message?.setPrompt(
                     "A mound of dirt sits on the ground with small flowers growing out of it.",
                     [ "Start digging...", "Leave it alone" ],
@@ -440,6 +452,9 @@ export class MapData {
                                         this.game.showDeath();
                                     });
                                 }
+                                break;
+                            case "Leave it alone":
+                                this.game.player?.updateInteraction(interaction);
                                 break;
                         }
                     }
