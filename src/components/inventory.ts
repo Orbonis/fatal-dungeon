@@ -32,8 +32,8 @@ export class Inventory {
         this.itemSprites = {};
 
         const key: Sprite = new Sprite(this.game.sheet!.textures["tile_key.png"]);
-        key.width = 200;
-        key.height = 200;
+        key.width = 140;
+        key.height = 117;
         key.anchor.set(0.5, 0.5);
         key.x = 150;
         key.y = 200;
