@@ -38,7 +38,7 @@ export class Game {
                     sound.add("music", "assets/music.mp3");
 
                     this.showWelcomeScreen(() => {
-                        sound.play("music", { loop: true, volume: 0.5 });
+                        sound.play("music", { loop: true, volume: 0.2 });
                         this.map = new Map(this, new MapData(this), this.app!.stage);
                         this.message = new Message(this, this.app!.stage);
                         this.player = new Player(this, PlayerColour.Red, this.app!.stage);
