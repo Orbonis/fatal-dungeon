@@ -81,8 +81,14 @@ export class Player {
 
     public move(x: number, y: number): void {
         const direction = (x > 0) ? 1 : (x < 0) ? 3 : (y > 0) ? 2 : 0;
-        if (this.game.map!.canLeave(this.position.x, this.position.y, direction) && this.game.map!.canEnter(this.position.x + x, this.position.y + y)) {
-            this.setPosition(this.position.x + x, this.position.y + y);
+        if (this.moveTween) {
+            if (this.moveQueue.length < 2) {
+                this.moveQueue.push(new Point(x, y));
+            }
+        } else {
+            if (this.game.map!.canLeave(this.position.x, this.position.y, direction) && this.game.map!.canEnter(this.position.x + x, this.position.y + y)) {
+                this.setPosition(this.position.x + x, this.position.y + y);
+            }
         }
     }
 
@@ -122,7 +128,7 @@ export class Player {
                         this.moveTween = undefined;
                         if (this.moveQueue.length > 0) {
                             const nextMove = this.moveQueue.shift();
-                            this.setPosition(nextMove!.x, nextMove!.y);
+                            this.move(nextMove!.x, nextMove!.y);
                         } else {
                             const interaction = this.game.map!.checkInteraction(x, y);
                             this.updateInteraction(interaction);
