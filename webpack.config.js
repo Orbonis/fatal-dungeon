@@ -68,7 +68,8 @@ const data = {
         }),
         new CopyWebpackPlugin({
             patterns: [
-                { from: "assets", to: "assets" }
+                { from: "assets", to: "assets" },
+                { from: "assets/favicon.ico", to: "./favicon.ico" }
             ]
         })
     ]
