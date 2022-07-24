@@ -1,4 +1,4 @@
-import { Application, Container, Graphics, Loader, NineSlicePlane, Sprite, Spritesheet, Text, TextStyle } from "pixi.js";
+import PIXI, { Application, Container, Graphics, Loader, NineSlicePlane, Sprite, Spritesheet, Text, TextStyle } from "pixi.js";
 import { Map } from "./components/map";
 import { Player, PlayerColour } from "./components/player";
 import { update as TweenUpdate } from "@tweenjs/tween.js";
@@ -7,6 +7,7 @@ import { Inventory } from "./components/inventory";
 import { OutlineFilter } from "pixi-filters";
 import { MapData } from "./components/map-data";
 import { LoadFonts } from "./utils/load-font";
+import { sound } from '@pixi/sound';
 
 export class Game {
     public app?: Application;
@@ -34,7 +35,10 @@ export class Game {
                 .load((loader, resources) => {
                     this.sheet = resources["assets/spritesheet.json"]?.spritesheet;
 
+                    sound.add("music", "assets/music.mp3");
+
                     this.showWelcomeScreen(() => {
+                        sound.play("music", { loop: true, volume: 0.5 });
                         this.map = new Map(this, new MapData(this), this.app!.stage);
                         this.message = new Message(this, this.app!.stage);
                         this.player = new Player(this, PlayerColour.Red, this.app!.stage);
@@ -140,6 +144,7 @@ export class Game {
         spacebarBegin.visible = false;
         container.addChild(spacebarBegin);
 
+        
         window.setTimeout(() => {
             begin.visible = true;
             spacebarBegin.visible = true;

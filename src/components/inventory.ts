@@ -1,5 +1,7 @@
-import { Container, Graphics, NineSlicePlane, Sprite, Text, TextStyle } from "pixi.js";
+import { OutlineFilter } from "pixi-filters";
+import { Container, NineSlicePlane, Sprite, Text, TextStyle } from "pixi.js";
 import { Game } from "src/game";
+import { sound } from '@pixi/sound';
 
 export enum InventoryItems {
     DrawerKey = "Small Key",
@@ -59,6 +61,36 @@ export class Inventory {
         spade.y = 800;
         this.box.addChild(spade);
         this.itemSprites[InventoryItems.RustySpade] = spade;
+
+        const outline = new OutlineFilter(4, 0x000000, 1);
+        let muted = false;
+        try {
+            muted = localStorage.getItem("muted") === "true";
+            if (muted) {
+                sound.muteAll();
+            }
+        } catch (e) {
+            // Do nothing.
+        }
+        const mute: Sprite = new Sprite(this.game.sheet!.textures[(muted) ? "musicOff.png" : "musicOn.png"]);
+        mute.width = 100;
+        mute.height = 100;
+        mute.anchor.set(1, 1);
+        mute.x = 400;
+        mute.y = 1000;
+        mute.buttonMode = true;
+        mute.interactive = true;
+        mute.filters = [ outline ];
+        mute.on("click", () => {
+            const muted = sound.toggleMuteAll();
+            mute.texture = this.game.sheet!.textures[(muted) ? "musicOff.png" : "musicOn.png"];
+            try {
+                localStorage.setItem("muted", (muted) ? "true": "false");
+            } catch (e) {
+                // Do nothing.
+            }
+        });
+        this.box.addChild(mute);
 
         this.items = [];
         this.updateInventoryText();
